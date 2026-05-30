@@ -240,25 +240,42 @@ html<!DOCTYPE html>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 페이지 전환 함수
+        const SUPABASE_URL = 'https://joqbafyoxpoihllndekt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvcWJhZnlveHBvaWhsbG5kZWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzE5MjYsImV4cCI6MjA5NTcwNzkyNn0.9GPx73acZ0kyUscJLzofMn3HIINxG_83paTSPCA3vqI';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         function togglePage() {
             const body = document.getElementById('body-wrapper');
             body.classList.toggle('active');
         }
 
-        // 질의 제출 처리 함수
-        function submitForm(event) {
+        async function submitForm(event) {
             event.preventDefault();
             const name = document.getElementById('userName').value;
             const question = document.getElementById('question').value;
-            
-            alert(`${name}님, 소중한 문의가 접수되었습니다!\n내용: ${question}`);
-            
-            // 폼 초기화 및 메인 화면 이동
-            document.getElementById('userName').value = '';
-            document.getElementById('question').value = '';
-            togglePage();
+            const submitBtn = event.target.querySelector('.btn-submit');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '제출 중...';
+
+            const { error } = await supabase
+                .from('inquiries')
+                .insert([{ name, question }]);
+
+            if (error) {
+                alert('문의 제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+                console.error(error);
+            } else {
+                alert(`${name}님, 소중한 문의가 접수되었습니다!`);
+                document.getElementById('userName').value = '';
+                document.getElementById('question').value = '';
+                togglePage();
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = '문의 제출';
         }
     </script>
 </body>
