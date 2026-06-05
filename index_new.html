@@ -334,7 +334,7 @@
     <script>
         const SUPABASE_URL = 'https://joqbafyoxpoihllndekt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvcWJhZnlveHBvaWhsbG5kZWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzE5MjYsImV4cCI6MjA5NTcwNzkyNn0.9GPx73acZ0kyUscJLzofMn3HIINxG_83paTSPCA3vqI';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // 페이지 전환 함수
         function showPage(pageId) {
@@ -380,7 +380,7 @@
             submitBtn.disabled = true;
             submitBtn.textContent = '제출 중...';
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('inquiries')
                 .insert([{ name, question }]);
 
@@ -410,7 +410,7 @@
             submitBtn.disabled = true;
             submitBtn.textContent = '주문 중...';
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('orders')
                 .insert([{ customer_name, menu_item, quantity, requests }]);
 
@@ -448,7 +448,7 @@
             const tbody = document.getElementById('order-list-body');
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">로딩 중...</td></tr>';
 
-            const { data: orders, error } = await supabase
+            const { data: orders, error } = await supabaseClient
                 .from('orders')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -497,7 +497,7 @@
 
         // 주문 상태 업데이트
         async function updateOrderStatus(orderId, newStatus) {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('orders')
                 .update({ status: newStatus })
                 .eq('id', orderId);
